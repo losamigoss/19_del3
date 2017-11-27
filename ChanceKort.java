@@ -9,4 +9,12 @@ private int nummer;
 		this.nummer=nummer;
 	}
 	
+	public String getNavn() {
+		return navn;
+	}
+	
+	public int getNummer() {
+		return nummer;
+	}
+	
 }
