@@ -7,7 +7,6 @@ public class Felt {
 	protected int feltNummer;
 	protected String beskrivelse;
 	protected int værdi;
-	private boolean ejerskab;
 	private Spiller ejer;
 	
 	
@@ -59,13 +58,11 @@ public class Felt {
 		}
 		
 		public void setEjer(Spiller ejer) {
-			this.ejer=ejer;
-			ejerskab=true;
+			 this.ejer=ejer;
 		}
-		
+			 	
 		public void fjernEjer() {
-			ejerskab=false;
-			this.ejer=null;
+			 this.ejer=null;
 		}
 		
 		public String getEjerNavn(int n) {
