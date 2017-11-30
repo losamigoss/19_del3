@@ -11,11 +11,10 @@ public class Monopoly {
 	public static void main(String[] args) {
 	
 		
-		
+		int startBalance=3; //til spillerne
 		Bræt b = new Bræt();
 		Bank bank = new Bank("Banken");
 		bank.indsætPenge(90);
-		
 		GUI_Field[] makeFields = GUI_FieldFactory.makeFields();
 		GUI_Field[] fields = new GUI_Field[24];
 		
@@ -45,8 +44,11 @@ public class Monopoly {
 		
 		for (int n=1;n<=antalSpillere;n++) {
 		GUI_Car car = new GUI_Car();
-		GUI_Player p = new GUI_Player(gui.getUserString("Indtast navn på spiller "+n+":"),16,car); 
-		bank.hævPenge(16);
+		GUI_Player p = new GUI_Player(gui.getUserString("Indtast navn på spiller "+n+":"),startBalance,car);
+		
+		
+		
+		bank.hævPenge(startBalance);
 		players[n-1]=p;
 		spillere[n-1]=new Spiller(p.getName());
 		spillere[n-1].setNummer(n-1); //Denne del bruges når det skal vides hvem der ejer grunden man er landet på,
@@ -67,45 +69,71 @@ public class Monopoly {
 			int posFør = spillere[h-1].getPosition();
 			fields[spillere[h-1].getPosition()].removeAllCars();
 			spillere[h-1].rykPosition(t.getVærdi());
-			gui.showMessage("du slog "+t.getVærdi()+" og landede på "+b.getFeltNavn(spillere[h-1].getPosition()));
+			gui.showMessage("Du slog "+t.getVærdi()+" og landede på "+b.getFeltNavn(spillere[h-1].getPosition()));
 			fields[spillere[h-1].getPosition()].setCar(players[h-1], true);
 			
 			
+			
 			int posEfter = spillere[h-1].getPosition();
+			
+			if (posFør>posEfter) {
+				if (posEfter!=0) {
+					gui.showMessage("Du har også passeret start. Modtag 3M.");
+					players[h-1].setBalance(players[h-1].getBalance()+3);
+					bank.hævPenge(3);
+				}
+			}
+			
+			
+			
 			if (posEfter==1 || posEfter==2 || posEfter==4 || posEfter==5 || posEfter==7 || posEfter==8 || posEfter==10 || posEfter== 11 || posEfter==13 || posEfter==14 || posEfter==16|| posEfter==17 || posEfter==19 || posEfter==20 || posEfter==22 || posEfter==23) {
+				
 				if (b.getEjerNavn(posEfter).equals(spillere[h-1].getNavn())) {
 					gui.showMessage("Du ejer denne grund.");
 				}
 				
+				if (players[h-1].getBalance()<b.getVærdi(posEfter) && !b.getEjer(posEfter).equals(spillere[h-1].getNavn())){
+					gui.showMessage("Du har ikke råd til at købe denne grund.");
+					int y=0;
+					GUI_Player vinderen = players[0];
+					String vinder=players[0].getName();
+					for (y=0; y<players.length-1;y++) {
+						if(vinderen.getBalance()==players[y+1].getBalance()) {
+							vinder+=" og "+players[y+1].getName();
+						}
+						if(vinderen.getBalance()<players[y+1].getBalance()) {
+							vinder=players[y+1].getName();
+							vinderen = players[y+1];
+						}
+						
+					}
+					
+					gui.showMessage(players[h-1].getName()+" er gået konkurs. Tillykke til "+vinder+" - du/I har vundet!");
+					break;
+				}
+				
+				
+				
+				
 				if (b.getEjerNavn(posEfter)!="" && b.getEjerNavn(posEfter)!=spillere[h-1].getNavn()) {
 					gui.showMessage("Denne grund ejes af "+b.getEjerNavn(posEfter)+" - Du betaler "+b.getVærdi(posEfter)+"M i leje.");
 					players[h-1].setBalance(players[h-1].getBalance()-b.getVærdi(posEfter));
-					Spiller ejer = spillere[b.getEjer(spillere[h-1].getPosition()).getNummer()];
+					Spiller ejer = spillere[b.getEjer(posEfter).getNummer()];
 					players[ejer.getNummer()].setBalance(players[ejer.getNummer()].getBalance()+b.getVærdi(posEfter));
 					
 				}
 				
-				if (players[h-1].getBalance()<b.getVærdi(spillere[h-1].getPosition())){
-					gui.showMessage("Du har ikke råd til at købe denne grund.");
-				}
 				
-				if (players[h-1].getBalance()>=b.getVærdi(spillere[h-1].getPosition()) && b.getEjerNavn(posEfter)=="") {
+				
+				if (players[h-1].getBalance()>=b.getVærdi(posEfter) && b.getEjerNavn(posEfter)=="") {
 					
-					for (int p=0;p<2;) {
-						String svar = gui.getUserString("Denne grund ejes ikke af nogen. Vil du købe den? Skriv ja/nej.");
-						if (svar.equalsIgnoreCase("ja")){
-							players[h-1].setBalance(players[h-1].getBalance()-b.getVærdi(spillere[h-1].getPosition()));
-							b.setEjer(spillere[h-1], spillere[h-1].getPosition());
-							gui.showMessage("Du har valgt at købe "+b.getFeltNavn(spillere[h-1].getPosition())+" og brugte "+b.getVærdi(spillere[h-1].getPosition())+"M.");
-							bank.indsætPenge(b.getVærdi(spillere[h-1].getPosition()));
-							p=2;
-						}
-						if (svar.equalsIgnoreCase("nej")){
-							gui.showMessage("Du har valgt ikke at købe grunden.");
-							p=2;
-						}
-				}
-				}
+					gui.showMessage("Denne grund ejes ikke af nogen. Du skal købe den.");
+					
+						players[h-1].setBalance(players[h-1].getBalance()-b.getVærdi(posEfter));
+						b.setEjer(spillere[h-1], posEfter);
+						gui.showMessage("Du købt "+b.getFeltNavn(spillere[h-1].getPosition())+" og brugte "+b.getVærdi(posEfter)+"M.");
+						bank.indsætPenge(b.getVærdi(spillere[h-1].getPosition()));
+			}
 				
 				
 				
@@ -133,24 +161,25 @@ public class Monopoly {
 				players[h-1].setBalance(players[h-1].getBalance()+3);
 			}
 			
-			if (posFør>posEfter) {
-				if (spillere[h-1].getPosition()!=0) {
-					gui.showMessage("Du har også passeret start. Modtag 3M.");
-					players[h-1].setBalance(players[h-1].getBalance()+3);
-					bank.hævPenge(3);
-				}
-			}
+			
 			
 			
 			if (players[h-1].getBalance()<0) {
 				int y=0;
+				GUI_Player vinderen = players[0];
 				String vinder=players[0].getName();
 				for (y=0; y<players.length-1;y++) {
-					if(players[y].getBalance()<players[y+1].getBalance()) {
-						vinder=players[y+1].getName();
+					if(vinderen.getBalance()==players[y+1].getBalance()) {
+						vinder+=" og "+players[y+1].getName();
 					}
+					if(vinderen.getBalance()<players[y+1].getBalance()) {
+						vinder=players[y+1].getName();
+						vinderen = players[y+1];
+					}
+					
 				}
-				gui.showMessage(players[h-1]+" er gået konkurs. Tillykke til "+vinder+" - du har vundet!");
+				
+				gui.showMessage(players[h-1].getName()+" er gået konkurs. Tillykke til "+vinder+" - du/I har vundet!");
 				break;
 			}
 			if (h==antalSpillere) {
