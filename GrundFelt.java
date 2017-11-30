@@ -3,35 +3,43 @@ package Bræt;
 import Spil.Spiller;
 
 public class GrundFelt extends Felt {
-	private int værdi;
-	private boolean ejerskab;
 	private Spiller ejer;
 	
 	public GrundFelt(String navn, int feltNummer, int værdi) {
-		super(navn,feltNummer);
-		this.værdi=værdi;
-		this.ejerskab=false;
+		super(navn,feltNummer,værdi);
 	}
 	
-	public int getVærdi() {
-		return værdi;
+//	---Disse metoder er overstreget, da de overskriver den ønskede metode i deres moderklasse. Manglende erfaring er skyld i dette
+//	public int getVærdi() { 
+//		return værdi;
+//	}
+//	
+//	public void setVærdi(int værdi) {
+//		this.værdi=værdi;
+//	}
+//	
+//	public void setEjer(Spiller ejer) {
+//		this.ejer=ejer;
+//		ejerskab=true;
+//	}
+//	
+//	public void fjernEjer() {
+//		ejerskab=false;
+//		this.ejer=null;
+//	}
+	
+	public String getEjerNavn(Spiller n) {
+		return n.getNavn();
 	}
 	
-	public void setVærdi(int værdi) {
-		this.værdi=værdi;
-	}
-	
-	public void setEjer(Spiller ejer) {
-		this.ejer=ejer;
-		ejerskab=true;
-	}
-	
-	public void fjernEjer() {
-		ejerskab=false;
-		this.ejer=null;
-	}
-	
-	public Spiller getEjer() {
-		return ejer;
+	public String toString() {
+		String print;
+		if (ejer==null) {
+			print= " - Værdi: "+værdi+" - Ejer: Ingen";
+		}
+		else {
+			print =" - Værdi: "+værdi+" - Ejer: "+ejer;
+		}
+		return super.toString()+print;
 	}
 }
