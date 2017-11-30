@@ -15,5 +15,10 @@ public class StartFelt extends Felt{
 	public void setStartVærdi(int startVærdi) {
 		this.startVærdi=startVærdi;
 	}
+	
+	public String toString() {
+		String print = " Værdi: "+startVærdi;
+		return super.toString()+print;
+	}
 
 }
