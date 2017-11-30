@@ -5,7 +5,6 @@ import Spil.Spiller;
 public class Felt {
 	protected String navn;
 	protected int feltNummer;
-	protected String beskrivelse;
 	protected int værdi;
 	private Spiller ejer;
 	
@@ -41,13 +40,6 @@ public class Felt {
 			return feltNummer;
 		}
 		
-		public String getBeskrivelse() {
-			return beskrivelse;
-		}
-		
-		public void setBeskrivelse(String beskrivelse) {
-			this.beskrivelse=beskrivelse;
-		}
 		
 		public void setVærdi(int n) {
 			værdi=n;
@@ -72,5 +64,9 @@ public class Felt {
 		public Spiller getEjer() {
 			return ejer;
 		}
+		
+		public String toString(){
+			String print = "Navn: "+navn+" - Feltnummer: "+feltNummer;
+			return print;
+		}
 }
-
